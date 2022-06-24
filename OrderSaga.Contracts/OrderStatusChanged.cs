@@ -4,14 +4,17 @@ namespace OrderSaga.Contracts
 {
     public class OrderStatusChanged
     {
-        public OrderStatusChanged(Guid orderId, OrderStatus status)
+        public OrderStatusChanged(int orderNumber, OrderStatus status, DateTime? updatedDate)
         {
-            OrderId = orderId;
+            OrderNumber = orderNumber;
             Status = status;
+            UpdatedDate = updatedDate;
         }
 
-        public Guid OrderId { get; }
+        public int OrderNumber { get; }
 
         public OrderStatus Status { get; }
+
+        public DateTime? UpdatedDate { get; }
     }
 }

@@ -5,16 +5,16 @@ namespace OrderSaga.Contracts
     public class OrderStatusChangingAccepted
     {
         public OrderStatusChangingAccepted(
-            Guid orderId,
+            int orderNumber,
             OrderStatus status,
             DateTime? updatedDate)
         {
-            OrderId = orderId;
+            OrderNumber = orderNumber;
             Status = status;
             UpdatedDate = updatedDate;
         }
 
-        public Guid OrderId { get; }
+        public int OrderNumber { get; }
 
         public OrderStatus Status { get; }
 

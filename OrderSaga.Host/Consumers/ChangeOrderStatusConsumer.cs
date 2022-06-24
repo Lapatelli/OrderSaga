@@ -16,18 +16,18 @@ namespace OrderSaga.Host.Consumers
 
         public async Task Consume(ConsumeContext<ChangeOrderStatus> context)
         {
-            _logger.LogInformation($"ChangeOrderStatus: {context.Message.OrderId} -- {context.Message.Status}");
+            _logger.LogInformation($"ChangeOrderStatus: Order {context.Message.OrderNumber} to state: {context.Message.Status}");
+            
+            var orderStatusChangedMessage = CreateOrderStatusChangedMessage(context.Message);
+            await context.Publish(orderStatusChangedMessage);
 
-            await context.Publish(
-                new OrderStatusChanged(
-                    context.Message.OrderId,
-                    context.Message.Status));
-
-            await context.RespondAsync(
-                new OrderStatusChangingAccepted(
-                    context.Message.OrderId,
-                    context.Message.Status,
-                    InVar.Timestamp));
+            await context.RespondAsync(CreateStatusChangingAcceptedMessage(context.Message));
         }
+
+        private static OrderStatusChanged CreateOrderStatusChangedMessage(ChangeOrderStatus message) =>
+            new OrderStatusChanged(message.OrderNumber, message.Status, message.UpdatedDate);
+
+        private static OrderStatusChangingAccepted CreateStatusChangingAcceptedMessage(ChangeOrderStatus message) =>
+            new OrderStatusChangingAccepted(message.OrderNumber, message.Status, message.UpdatedDate);
     }
 }

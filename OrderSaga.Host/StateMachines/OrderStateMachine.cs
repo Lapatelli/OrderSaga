@@ -14,7 +14,7 @@ namespace OrderSaga.Host.StateMachines
             InstanceState(x => x.CurrentState);
 
             Event(() => OrderCreated, x => x.CorrelateById(m => m.Message.OrderId));
-            Event(() => OrderStatusChanged, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderStatusChanged, x => x.CorrelateBy<int>(m => m.OrderNumber, t => t.Message.OrderNumber));
 
             HandleInitialState();
             HandleAwaitingPackingState();

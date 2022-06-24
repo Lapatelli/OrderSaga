@@ -28,15 +28,13 @@ namespace OrderSaga.WebAPI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Post(
-            Guid orderId,
-            int orderNumber,
             string customerName,
             string customerSurname,
             IList<OrderItemDto> items)
         {
             var (accepted, rejected) = await _createOrderRequestClient
                 .GetResponse<OrderCreationAccepted, OrderCreationRejected>(new CreateOrder(
-                    orderId, InVar.Timestamp, orderNumber, customerName, customerSurname, items));
+                    InVar.Timestamp, customerName, customerSurname, items));
 
             if(accepted.IsCompletedSuccessfully)
             {
@@ -51,7 +49,7 @@ namespace OrderSaga.WebAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Guid orderId, OrderStatus status)
+        public async Task<IActionResult> Put(int orderNumber, OrderStatus status)
         {
             //var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("exchange:change-order-status"));
 
@@ -65,7 +63,7 @@ namespace OrderSaga.WebAPI.Controllers
 
             var response = await _changeOrderStatusRequestClient
                 .GetResponse<OrderStatusChangingAccepted>(
-                    new ChangeOrderStatus(orderId, status));
+                    new ChangeOrderStatus(orderNumber, status, InVar.Timestamp));
 
             return Ok(response.Message);
         }

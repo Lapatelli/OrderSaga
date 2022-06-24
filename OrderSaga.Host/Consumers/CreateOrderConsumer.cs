@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
 using OrderSaga.Contracts;
+using System;
 using System.Threading.Tasks;
 
 namespace OrderSaga.Host.Consumers
@@ -16,36 +17,50 @@ namespace OrderSaga.Host.Consumers
 
         public async Task Consume(ConsumeContext<CreateOrder> context)
         {
-            _logger.LogInformation($"CreateOrderConsumer: {context.Message.OrderNumber}");
+            var orderId = Guid.NewGuid();
 
-            if (context.Message.OrderNumber == 1)
+            _logger.LogInformation($"CreateOrderConsumer: proccess orderId: {orderId}.");
+
+            if (string.IsNullOrEmpty(context.Message.CustomerName))
             {
-                await context.RespondAsync(new OrderCreationRejected(
-                    context.Message.OrderId,
-                    context.Message.OrderDate,
-                    context.Message.OrderNumber,
-                    $"Invalid ordernumber"));
-
+                await context.RespondAsync(CreateOrderCreationRejectedMessage(context.Message, orderId));
                 return;
             }
 
-            var orderCreatedMessage = new OrderCreated(
-                context.Message.OrderId,
-                context.Message.OrderNumber,
-                context.Message.OrderDate,
-                context.Message.CustomerName,
-                context.Message.CustomerSurname,
-                context.Message.Items);
-
+            var orderCreatedMessage = CreateOrderCreatedMessage(context.Message, orderId);
             await context.Publish(orderCreatedMessage);
 
-            await context.RespondAsync(new OrderCreationAccepted(
-                context.Message.OrderId,
-                InVar.Timestamp,
-                context.Message.OrderNumber,
-                context.Message.CustomerName,
-                context.Message.CustomerSurname,
-                context.Message.Items));
+            await context.RespondAsync(CreateOrderCreationAcceptedMessage(orderCreatedMessage));
         }
+
+        private static OrderCreated CreateOrderCreatedMessage(
+            CreateOrder message,
+            Guid orderId)
+        {
+            var orderNumber = (orderId.GetHashCode() & 0x7fffffff) % 100000000;
+
+            return new OrderCreated(
+                orderId,
+                orderNumber,
+                message.OrderDate,
+                message.CustomerName,
+                message.CustomerSurname,
+                message.Items);
+        }
+
+        private static OrderCreationAccepted CreateOrderCreationAcceptedMessage(OrderCreated message) =>
+            new OrderCreationAccepted(
+                message.OrderId,
+                message.OrderDate,
+                message.OrderNumber,
+                message.CustomerName,
+                message.CustomerSurname,
+                message.Items);
+
+        private static OrderCreationRejected CreateOrderCreationRejectedMessage(CreateOrder message, Guid orderId) =>
+            new OrderCreationRejected(
+                orderId,
+                message.OrderDate,
+                $"Please specify customer name");
     }
 }
