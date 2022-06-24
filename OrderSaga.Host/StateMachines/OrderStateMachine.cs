@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using MoreLinq;
 using OrderSaga.Contracts;
 using OrderSaga.Host.Entities;
 using System;

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderSaga.Contracts;
 using OrderSaga.Contracts.Dto;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -51,16 +50,6 @@ namespace OrderSaga.WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(int orderNumber, OrderStatus status)
         {
-            //var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("exchange:change-order-status"));
-
-            //await endpoint.Send(new ChangeOrderStatus
-            //{
-            //    OrderId = orderId,
-            //    Status = status
-            //});
-
-            //return Accepted();
-
             var response = await _changeOrderStatusRequestClient
                 .GetResponse<OrderStatusChangingAccepted>(
                     new ChangeOrderStatus(orderNumber, status, InVar.Timestamp));

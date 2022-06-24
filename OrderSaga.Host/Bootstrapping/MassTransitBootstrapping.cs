@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using OrderSaga.Contracts;
 using OrderSaga.Host.Consumers;
 using OrderSaga.Host.Entities;
+using OrderSaga.Host.Observers;
 using OrderSaga.Host.StateMachines;
 
 namespace OrderSaga.Host.Bootstrapping
@@ -16,6 +16,7 @@ namespace OrderSaga.Host.Bootstrapping
             IConfiguration configuration)
         {
             services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+            services.AddReceiveObserver<ReceiveObserver>();
 
             services.AddMassTransit(busConfig =>
             {

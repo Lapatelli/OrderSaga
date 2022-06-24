@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Microsoft.Extensions.Logging;
 using OrderSaga.Contracts;
 using System;
 using System.Threading.Tasks;
@@ -8,18 +7,9 @@ namespace OrderSaga.Host.Consumers
 {
     public class CreateOrderConsumer : IConsumer<CreateOrder>
     {
-        private readonly ILogger<CreateOrderConsumer> _logger;
-
-        public CreateOrderConsumer(ILogger<CreateOrderConsumer> logger)
-        {
-            _logger = logger;
-        }
-
         public async Task Consume(ConsumeContext<CreateOrder> context)
         {
             var orderId = Guid.NewGuid();
-
-            _logger.LogInformation($"CreateOrderConsumer: proccess orderId: {orderId}.");
 
             if (string.IsNullOrEmpty(context.Message.CustomerName))
             {
