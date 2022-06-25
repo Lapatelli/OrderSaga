@@ -12,10 +12,30 @@ namespace OrderSaga.WebAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IBusControl _bus;
+        private readonly IRequestClient<CheckOrder> _checkOrderRequestClient;
 
-        public OrderController(IBusControl bus)
+        public OrderController(
+            IBusControl bus,
+            IRequestClient<CheckOrder> checkOrderRequestClient) 
         {
             _bus = bus;
+            _checkOrderRequestClient = checkOrderRequestClient;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(int orderNumber)
+        {
+            var (orderInfo, orderNotFound) = await _checkOrderRequestClient
+                .GetResponse<OrderDto, OrderNotFound>(new CheckOrder(orderNumber));
+
+            if (orderInfo.IsCompletedSuccessfully)
+            {
+                var response = await orderInfo;
+                return Ok(response.Message);
+            }
+
+            var notFoundResponse = await orderNotFound;
+            return NotFound(notFoundResponse.Message);
         }
 
         [HttpPost]

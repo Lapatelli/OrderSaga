@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using NJsonSchema.Generation;
+using OrderSaga.Contracts;
 
 namespace OrderSaga.WebAPI
 {
@@ -24,6 +25,8 @@ namespace OrderSaga.WebAPI
 
             services.AddMassTransit(busConfig =>
             {
+                busConfig.AddRequestClient<CheckOrder>();
+
                 busConfig.UsingRabbitMq((context, busFactoryConfig) =>
                 {
                     busFactoryConfig.Host(Configuration["RabbitMq:Host"], "/", hostConfig =>

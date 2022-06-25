@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using OrderSaga.Contracts;
+using OrderSaga.Contracts.Dto;
 using OrderSaga.Host.Entities;
 using System;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace OrderSaga.Host.StateMachines
 
             Event(() => OrderCreated, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderStatusChanged, x => x.CorrelateBy<int>(m => m.OrderNumber, t => t.Message.OrderNumber));
+            HandleOrderRequestedEvent();
 
             HandleInitialState();
             HandleAwaitingPackingState();
@@ -35,12 +37,33 @@ namespace OrderSaga.Host.StateMachines
 
         public Event<OrderStatusChanged> OrderStatusChanged { get; set; }
 
+        public Event<CheckOrder> OrderRequested { get; set; }
+
         private void HandleInitialState()
         {
             Initially(
                 When(OrderCreated)
                     .Then(ConfigureBehaviourForOrderCreatedEvent())
                     .TransitionTo(AwaitingPacking));
+        }
+
+        private void HandleOrderRequestedEvent()
+        {
+            Event(() => OrderRequested, x =>
+            {
+                x.CorrelateBy<int>(m => m.OrderNumber, t => t.Message.OrderNumber);
+                x.OnMissingInstance(m => m.ExecuteAsync(async context =>
+                {
+                    if (context.RequestId.HasValue)
+                    {
+                        await context.RespondAsync(new OrderNotFound(context.Message.OrderNumber));
+                    }
+                }));
+            });
+
+            DuringAny(
+                When(OrderRequested)
+                    .RespondAsync(x => x.Init<OrderDto>(CreateOrderDto(x.Saga))));
         }
 
         private void HandleAwaitingPackingState()
@@ -148,5 +171,14 @@ namespace OrderSaga.Host.StateMachines
                         orderNumber: context.Saga.OrderNumber,
                         currentOrderStatus: Enum.Parse<OrderStatus>(context.Saga.CurrentState),
                         intendedOrderStatus: context.Message.Status);
+
+        private static OrderDto CreateOrderDto(Order order)
+        {
+            var items = order.Items
+                .Select(i => new OrderItemDto { Sku = i.Sku, Price = i.Price, Quantity = i.Quantity })
+                .ToList();
+
+            return new OrderDto(order.OrderNumber, order.CurrentState, order.CustomerName, order.CustomerSurname, items);
+        }
     }
 }
