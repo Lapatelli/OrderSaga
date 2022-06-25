@@ -5,8 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using OrderSaga.Contracts;
-using System;
+using NJsonSchema.Generation;
 
 namespace OrderSaga.WebAPI
 {
@@ -25,9 +24,6 @@ namespace OrderSaga.WebAPI
 
             services.AddMassTransit(busConfig =>
             {
-                busConfig.AddRequestClient<CreateOrder>(new Uri(Configuration["MassTransit:Exchanges:CreateOrderExchange"]));
-                busConfig.AddRequestClient<ChangeOrderStatus>(new Uri(Configuration["MassTransit:Exchanges:ChangeOrderStatusExchange"]));
-
                 busConfig.UsingRabbitMq((context, busFactoryConfig) =>
                 {
                     busFactoryConfig.Host(Configuration["RabbitMq:Host"], "/", hostConfig =>
@@ -36,11 +32,15 @@ namespace OrderSaga.WebAPI
                         hostConfig.Password(Configuration["RabbitMq:Credentials:Password"]);
                     });
 
-                    busFactoryConfig.ConfigureEndpoints(context);
+                    busFactoryConfig.ConfigureEndpoints(context, KebabCaseEndpointNameFormatter.Instance);
                 });
             });
 
-            services.AddOpenApiDocument(cfg => cfg.PostProcess = d => d.Info.Title = "OrderSaga API");
+            services.AddOpenApiDocument(cfg =>
+            { 
+                cfg.PostProcess = d => d.Info.Title = "OrderSaga API";
+                cfg.DefaultEnumHandling = EnumHandling.String;
+            });
 
             services.AddControllers();
         }

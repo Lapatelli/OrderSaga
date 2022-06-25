@@ -20,8 +20,8 @@ namespace OrderSaga.Host.Bootstrapping
 
             services.AddMassTransit(busConfig =>
             {
-                busConfig.AddConsumersFromNamespaceContaining<CreateOrderConsumer>();
-                busConfig.AddConsumersFromNamespaceContaining<ChangeOrderStatusConsumer>();
+                busConfig.AddConsumer<OrderStatusChangedRejectedConsumer>();
+                busConfig.AddConsumer<OrderStatusChangedSubmittedConsumer>();
 
                 busConfig.AddSagaStateMachine<OrderStateMachine, Order>()
                     .NHibernateRepository();
@@ -34,7 +34,7 @@ namespace OrderSaga.Host.Bootstrapping
                         hostConfig.Password(configuration["RabbitMq:Credentials:Password"]);
                     });
 
-                    busFactoryConfig.ConfigureEndpoints(context);
+                    busFactoryConfig.ConfigureEndpoints(context, KebabCaseEndpointNameFormatter.Instance);
                 });
             });
 

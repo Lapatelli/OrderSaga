@@ -17,8 +17,8 @@ namespace OrderSaga.DatabaseSchema.Bootstrapping
                 .ConfigureRunner(rb => rb
                     .AddSqlServer()
                     .WithGlobalConnectionString(configuration["ConnectionStrings:OrderSagaDB"])
-                    .ScanIn(typeof(OrdersTableFormation).Assembly).For.Migrations()
-                    .ScanIn(typeof(OrderItemsTableFormation).Assembly).For.Migrations())
+                    .ScanIn(typeof(M202206250001_OrdersTableFormation).Assembly).For.Migrations()
+                    .ScanIn(typeof(M202206250002_OrderItemsTableFormation).Assembly).For.Migrations())
                     .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             services.AddScoped<IDbMigrationRunner, DbMigrationRunner>();

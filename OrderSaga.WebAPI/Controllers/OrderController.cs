@@ -11,18 +11,11 @@ namespace OrderSaga.WebAPI.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IRequestClient<CreateOrder> _createOrderRequestClient;
-        private readonly IRequestClient<ChangeOrderStatus> _changeOrderStatusRequestClient;
-        private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly IBusControl _bus;
 
-        public OrderController(
-            IRequestClient<CreateOrder> createOrderRequestClient,
-            IRequestClient<ChangeOrderStatus> changeOrderStatusRequestClient,
-            ISendEndpointProvider sendEndpointProvider)
+        public OrderController(IBusControl bus)
         {
-            _createOrderRequestClient = createOrderRequestClient;
-            _changeOrderStatusRequestClient = changeOrderStatusRequestClient;
-            _sendEndpointProvider = sendEndpointProvider;
+            _bus = bus;
         }
 
         [HttpPost]
@@ -31,30 +24,37 @@ namespace OrderSaga.WebAPI.Controllers
             string customerSurname,
             IList<OrderItemDto> items)
         {
-            var (accepted, rejected) = await _createOrderRequestClient
-                .GetResponse<OrderCreationAccepted, OrderCreationRejected>(new CreateOrder(
-                    InVar.Timestamp, customerName, customerSurname, items));
+            var message = CreateOrderCreatedMessage(customerName, customerSurname, items);
+            await _bus.Publish(message);
 
-            if(accepted.IsCompletedSuccessfully)
-            {
-                var response = await accepted;
-                return Ok(response.Message);
-            }
-            else
-            {
-                var response = await rejected;
-                return BadRequest(response.Message);
-            }
+            return Accepted(message);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(int orderNumber, OrderStatus status)
         {
-            var response = await _changeOrderStatusRequestClient
-                .GetResponse<OrderStatusChangingAccepted>(
-                    new ChangeOrderStatus(orderNumber, status, InVar.Timestamp));
+            var message = CreateOrderStatusChangedMessage(orderNumber, status);
+            await _bus.Publish(message);
 
-            return Ok(response.Message);
+            return Accepted(message);
+        }
+
+        private static OrderCreated CreateOrderCreatedMessage(
+            string customerName,
+            string customerSurname,
+            IList<OrderItemDto> items)
+        {
+            var orderId = InVar.CorrelationId;
+            var orderDate = InVar.Timestamp;
+            var orderNumber = (orderId.GetHashCode() & 0x7fffffff) % 100000000;
+
+            return new OrderCreated(orderId, orderNumber, orderDate, customerName, customerSurname, items);
+        }
+
+        private static OrderStatusChanged CreateOrderStatusChangedMessage(int orderNumber, OrderStatus status)
+        {
+            var updatedDate = InVar.Timestamp;
+            return new OrderStatusChanged(orderNumber, status, updatedDate);
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace OrderSaga.DatabaseSchema.Migrations
 {
-    [Migration(202206220001)]
-    public class OrdersTableFormation : Migration
+    [Migration(202206250001)]
+    public class M202206250001_OrdersTableFormation : Migration
     {
         public override void Up()
         {

@@ -28,8 +28,6 @@ namespace OrderSaga.Host.Bootstrapping
                     c.ConnectionString = configuration["ConnectionStrings:OrderSagaDB"];
                     c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
                     c.SchemaAction = SchemaAutoAction.Validate;
-                    c.LogFormattedSql = true;
-                    c.LogSqlInConsole = true;
                 });
 
             var mapper = new ModelMapper();
