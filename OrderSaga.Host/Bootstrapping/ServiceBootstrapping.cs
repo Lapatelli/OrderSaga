@@ -8,7 +8,7 @@ namespace OrderSaga.Host.Bootstrapping
     {
         public static IServiceCollection BootstrapServices(this IServiceCollection services)
         {
-            var config = BootstrapConfiguration();
+            var config = SetUpConfigFile();
 
             services
                 .ConfigurateNHibernate(config)
@@ -17,7 +17,7 @@ namespace OrderSaga.Host.Bootstrapping
             return services;
         }
  
-        private static IConfigurationRoot BootstrapConfiguration()
+        private static IConfigurationRoot SetUpConfigFile()
         {
             return new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)

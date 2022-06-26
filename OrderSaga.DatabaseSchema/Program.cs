@@ -8,7 +8,7 @@ namespace OrderSaga.DatabaseSchema
         public static void Main()
         {
             var serviceProvider = new ServiceCollection()
-                .BootstrapMigration()
+                .ConfigureMigrationServices()
                 .BuildServiceProvider();
 
             var runner = serviceProvider.GetRequiredService<IDbMigrationRunner>();

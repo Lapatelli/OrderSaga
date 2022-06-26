@@ -8,9 +8,9 @@ namespace OrderSaga.DatabaseSchema.Bootstrapping
 {
     public static class MigrationBootstrapping
     {
-        public static IServiceCollection BootstrapMigration(this IServiceCollection services)
+        public static IServiceCollection ConfigureMigrationServices(this IServiceCollection services)
         {
-            var configuration = BootstrapConfiguration();
+            var configuration = SetUpConfigFile();
 
             services
                 .AddFluentMigratorCore()
@@ -26,7 +26,7 @@ namespace OrderSaga.DatabaseSchema.Bootstrapping
             return services;
         }
 
-        private static IConfigurationRoot BootstrapConfiguration()
+        private static IConfigurationRoot SetUpConfigFile()
         {
             return new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)

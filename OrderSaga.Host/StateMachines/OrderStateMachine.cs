@@ -37,7 +37,7 @@ namespace OrderSaga.Host.StateMachines
 
         public Event<OrderStatusChanged> OrderStatusChanged { get; set; }
 
-        public Event<CheckOrder> OrderRequested { get; set; }
+        public Event<OrderRequested> OrderRequested { get; set; }
 
         private void HandleInitialState()
         {
@@ -74,13 +74,13 @@ namespace OrderSaga.Host.StateMachines
                     context => AwaitingPackingState.AwaitingPackingStateAccepted.Contains(context.Message.Status))
                     .Then(ConfigureBehaviourForStatusChangedEventInAwaitingPackingState())
                     .TransitionTo(Packed)
-                    .Publish(ConfigureStatusSubmittedMessage(OrderStatus.AwaitingPacking)));
+                    .Publish(CreateStatusSubmittedMessage(OrderStatus.AwaitingPacking)));
 
             During(AwaitingPacking,
                 When(
                     OrderStatusChanged,
                     context => AwaitingPackingState.AwaitingPackingStateRejected.Contains(context.Message.Status))
-                    .Publish(ConfigureStatusRejectedMessage()));
+                    .Publish(CreateStatusRejectedMessage()));
         }
 
         private void HandlePackedState()
@@ -91,13 +91,13 @@ namespace OrderSaga.Host.StateMachines
                     context => PackedState.PackedStateAccepted.Contains(context.Message.Status))
                     .Then(ConfigureBehaviourForStatusChangedEventInPackedState())
                     .TransitionTo(Shipped)
-                    .Publish(ConfigureStatusSubmittedMessage(OrderStatus.Packed)));
+                    .Publish(CreateStatusSubmittedMessage(OrderStatus.Packed)));
 
             During(Packed,
                 When(
                     OrderStatusChanged,
                     context => PackedState.PackedStateRejected.Contains(context.Message.Status))
-                    .Publish(ConfigureStatusRejectedMessage()));
+                    .Publish(CreateStatusRejectedMessage()));
         }
 
 
@@ -107,7 +107,7 @@ namespace OrderSaga.Host.StateMachines
                 When(
                     OrderStatusChanged,
                     context => ShippedState.ShippedStateRejected.Contains(context.Message.Status))
-                    .Publish(ConfigureStatusRejectedMessage()));
+                    .Publish(CreateStatusRejectedMessage()));
 
         }
 
@@ -157,7 +157,7 @@ namespace OrderSaga.Host.StateMachines
 
 
         private static EventMessageFactory<Order, OrderStatusChanged, OrderStatusChangedSubmitted>
-            ConfigureStatusSubmittedMessage(OrderStatus previousOrderStatus) =>
+            CreateStatusSubmittedMessage(OrderStatus previousOrderStatus) =>
                 context =>
                     new OrderStatusChangedSubmitted(
                         orderNumber: context.Saga.OrderNumber,
@@ -165,7 +165,7 @@ namespace OrderSaga.Host.StateMachines
                         currentOrderStatus: context.Message.Status);
 
         private static EventMessageFactory<Order, OrderStatusChanged, OrderStatusChangedRejected>
-            ConfigureStatusRejectedMessage() =>
+            CreateStatusRejectedMessage() =>
                 context =>
                     new OrderStatusChangedRejected(
                         orderNumber: context.Saga.OrderNumber,

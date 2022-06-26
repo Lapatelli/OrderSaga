@@ -1,4 +1,6 @@
-﻿namespace OrderSaga.Contracts.Dto
+﻿using System;
+
+namespace OrderSaga.Contracts.Dto
 {
     public class OrderItemDto
     {

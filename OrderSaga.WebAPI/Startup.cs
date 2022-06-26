@@ -25,7 +25,7 @@ namespace OrderSaga.WebAPI
 
             services.AddMassTransit(busConfig =>
             {
-                busConfig.AddRequestClient<CheckOrder>();
+                busConfig.AddRequestClient<OrderRequested>();
 
                 busConfig.UsingRabbitMq((context, busFactoryConfig) =>
                 {

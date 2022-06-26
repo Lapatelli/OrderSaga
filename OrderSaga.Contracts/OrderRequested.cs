@@ -1,8 +1,8 @@
 ﻿namespace OrderSaga.Contracts
 {
-    public class CheckOrder
+    public class OrderRequested
     {
-        public CheckOrder(int orderNumber)
+        public OrderRequested(int orderNumber)
         {
             OrderNumber = orderNumber;
         }

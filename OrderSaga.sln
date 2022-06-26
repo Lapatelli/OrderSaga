@@ -3,19 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.DatabaseSchema", "OrderSaga.DatabaseSchema\OrderSaga.DatabaseSchema.csproj", "{3FC890EF-868E-4C6B-92CF-42D223988A52}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.WebAPI", "OrderSaga.WebAPI\OrderSaga.WebAPI.csproj", "{2933F826-364F-44E0-9B07-FA8F4632064A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.Contracts", "OrderSaga.Contracts\OrderSaga.Contracts.csproj", "{F364C1BE-F372-4383-B344-322CDF3C7796}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.Host", "OrderSaga.Host\OrderSaga.Host.csproj", "{BD797882-7793-4B4A-97B3-8724C5BA927E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{59E3DA24-4188-4E1E-B844-9692EC1A6E18}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{12C85D7B-FC68-4ABA-99D2-08BA5BB0261A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.WebAPI", "OrderSaga.WebAPI\OrderSaga.WebAPI.csproj", "{A88DDE6D-EB23-4090-B0F9-1D97969847CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.Host", "OrderSaga.Host\OrderSaga.Host.csproj", "{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.DatabaseSchema", "OrderSaga.DatabaseSchema\OrderSaga.DatabaseSchema.csproj", "{DAC10817-8554-489D-AFE5-A4DDFF076BD3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.Contracts", "OrderSaga.Contracts\OrderSaga.Contracts.csproj", "{B526C48D-AD85-4846-A72D-9139A11DBC92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7168715A-5B1F-4E96-9ED9-A22CA286F32A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga.Host.Tests", "OrderSaga.Host.Tests\OrderSaga.Host.Tests.csproj", "{F253E282-8153-4BD8-83C5-6BE4ED2A57DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,25 +29,36 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3FC890EF-868E-4C6B-92CF-42D223988A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3FC890EF-868E-4C6B-92CF-42D223988A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3FC890EF-868E-4C6B-92CF-42D223988A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3FC890EF-868E-4C6B-92CF-42D223988A52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2933F826-364F-44E0-9B07-FA8F4632064A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2933F826-364F-44E0-9B07-FA8F4632064A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2933F826-364F-44E0-9B07-FA8F4632064A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2933F826-364F-44E0-9B07-FA8F4632064A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F364C1BE-F372-4383-B344-322CDF3C7796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F364C1BE-F372-4383-B344-322CDF3C7796}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F364C1BE-F372-4383-B344-322CDF3C7796}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F364C1BE-F372-4383-B344-322CDF3C7796}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD797882-7793-4B4A-97B3-8724C5BA927E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD797882-7793-4B4A-97B3-8724C5BA927E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD797882-7793-4B4A-97B3-8724C5BA927E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD797882-7793-4B4A-97B3-8724C5BA927E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88DDE6D-EB23-4090-B0F9-1D97969847CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88DDE6D-EB23-4090-B0F9-1D97969847CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88DDE6D-EB23-4090-B0F9-1D97969847CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88DDE6D-EB23-4090-B0F9-1D97969847CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAC10817-8554-489D-AFE5-A4DDFF076BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAC10817-8554-489D-AFE5-A4DDFF076BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAC10817-8554-489D-AFE5-A4DDFF076BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAC10817-8554-489D-AFE5-A4DDFF076BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B526C48D-AD85-4846-A72D-9139A11DBC92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B526C48D-AD85-4846-A72D-9139A11DBC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B526C48D-AD85-4846-A72D-9139A11DBC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B526C48D-AD85-4846-A72D-9139A11DBC92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F253E282-8153-4BD8-83C5-6BE4ED2A57DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F253E282-8153-4BD8-83C5-6BE4ED2A57DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F253E282-8153-4BD8-83C5-6BE4ED2A57DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F253E282-8153-4BD8-83C5-6BE4ED2A57DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A88DDE6D-EB23-4090-B0F9-1D97969847CA} = {12C85D7B-FC68-4ABA-99D2-08BA5BB0261A}
+		{A9D0EB83-B01C-4DBD-BC00-4BF3988A9C6D} = {12C85D7B-FC68-4ABA-99D2-08BA5BB0261A}
+		{DAC10817-8554-489D-AFE5-A4DDFF076BD3} = {12C85D7B-FC68-4ABA-99D2-08BA5BB0261A}
+		{B526C48D-AD85-4846-A72D-9139A11DBC92} = {12C85D7B-FC68-4ABA-99D2-08BA5BB0261A}
+		{F253E282-8153-4BD8-83C5-6BE4ED2A57DF} = {7168715A-5B1F-4E96-9ED9-A22CA286F32A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BFCABB8-CD73-499E-9D6F-25ACACE2C78F}
