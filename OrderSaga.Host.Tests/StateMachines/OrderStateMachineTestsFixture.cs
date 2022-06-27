@@ -40,39 +40,40 @@ namespace OrderSaga.Host.Tests.StateMachines
             await _harness.Stop();
         }
 
-        protected async Task DeliverOrderFromInitialToAwaitingPackingState(OrderCreated orderCreatedMessage)
+        protected async Task DeliverOrderFromInitialToAwaitingPackingState(OrderCreated orderMessage)
         {
-            await SendEndpoint.Send(orderCreatedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, _stateMachine.AwaitingPacking);
+            await SendEndpoint.Send(orderMessage);
+            await WaitForState(orderMessage.OrderId, _stateMachine.AwaitingPacking);
         }
 
-        protected async Task DeliverOrderFromInitialToPackedState(OrderCreated orderCreatedMessage)
+        protected async Task DeliverOrderFromInitialToPackedState(OrderCreated orderMessage)
         {
-            var packedStatusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Packed);
+            var packedStatusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Packed);
 
-            await SendEndpoint.Send(orderCreatedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.AwaitingPacking);
-            await SendEndpoint.Send(packedStatusChangedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Packed);
+            await SendEndpoint.Send(orderMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.AwaitingPacking);
+            await SendEndpoint.Send(packedStatusMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.Packed);
         }
 
-        protected async Task DeliverOrderFromInitialToShippedState(OrderCreated orderCreatedMessage)
+        protected async Task DeliverOrderFromInitialToShippedState(OrderCreated orderMessage)
         {
-            var packedStatusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Packed);
-            var shippedStatusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Shipped);
+            var packedStatusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Packed);
+            var shippedStatusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Shipped);
 
-            await SendEndpoint.Send(orderCreatedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.AwaitingPacking);
-            await SendEndpoint.Send(packedStatusChangedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Packed);
-            await SendEndpoint.Send(shippedStatusChangedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Shipped);
+            await SendEndpoint.Send(orderMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.AwaitingPacking);
+            await SendEndpoint.Send(packedStatusMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.Packed);
+            await SendEndpoint.Send(shippedStatusMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.Shipped);
         }
 
         protected async Task<ISagaInstance<Order>> WaitForState(Guid correlationId, State state)
         {
-            var matchingSagaIds = await _sagaHarness
-                .Match(x => x.CorrelationId == correlationId && x.CurrentState == state.Name, TimeSpan.FromSeconds(30));
+            var matchingSagaIds = await _sagaHarness.Match(
+                x => x.CorrelationId == correlationId && x.CurrentState == state.Name,
+                TimeSpan.FromSeconds(10));
 
             var sagaInstance = _sagaHarness.Sagas
                 .Select(i => i.Saga.CorrelationId == correlationId).FirstOrDefault();

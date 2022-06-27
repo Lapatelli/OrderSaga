@@ -56,7 +56,7 @@ namespace OrderSaga.WebAPI.Controllers
             var message = CreateOrderStatusChangedMessage(orderNumber, status);
             await _bus.Publish(message);
 
-            return Accepted(message);
+            return Accepted();
         }
 
         private static OrderCreated CreateOrderCreatedMessage(

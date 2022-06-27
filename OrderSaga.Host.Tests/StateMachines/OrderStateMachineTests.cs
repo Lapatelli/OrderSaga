@@ -22,15 +22,16 @@ namespace OrderSaga.Host.Tests.StateMachines
         [Test]
         public async Task OrderStatusChanged_FromAwaitingPackingToPacked_OrderStateIsPacked()
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Packed);
-            await DeliverOrderFromInitialToAwaitingPackingState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Packed);
 
-            await SendEndpoint.Send(statusChangedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Packed);
+            await DeliverOrderFromInitialToAwaitingPackingState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.Packed);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Packed, statusChangedMessage.UpdatedDate);
+            AssertOrderProperties(orderMessage, OrderStatus.Packed, statusMessage.UpdatedDate);
         }
 
         [TestCase(OrderStatus.AwaitingPacking)]
@@ -38,32 +39,30 @@ namespace OrderSaga.Host.Tests.StateMachines
         public async Task OrderStatusChanged_InvalidStatusForUpdateProvidedForAwaitingPackingOrder_OrderStateIsNotChanged(
             OrderStatus providedStatus)
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, providedStatus);
-            await DeliverOrderFromInitialToAwaitingPackingState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, providedStatus);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToAwaitingPackingState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.AwaitingPacking, statusChangedMessage.UpdatedDate);
+            AssertOrderProperties(orderMessage, OrderStatus.AwaitingPacking, statusMessage.UpdatedDate);
         }
 
         [Test]
         public async Task OrderStatusChanged_FromPackedToShipped_OrderStateIsShipped()
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Shipped);
-            await DeliverOrderFromInitialToPackedState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Shipped);
 
-            await SendEndpoint.Send(statusChangedMessage);
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Shipped);
+            await DeliverOrderFromInitialToPackedState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
+            await WaitForState(orderMessage.OrderId, StateMachine.Shipped);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            AssertOrderProperties(
-                orderCreatedMessage,
-                OrderStatus.Shipped,
-                statusChangedMessage.UpdatedDate,
-                statusChangedMessage.UpdatedDate);
+            AssertOrderProperties(orderMessage, OrderStatus.Shipped, statusMessage.UpdatedDate, statusMessage.UpdatedDate);
         }
 
         [TestCase(OrderStatus.AwaitingPacking)]
@@ -71,14 +70,15 @@ namespace OrderSaga.Host.Tests.StateMachines
         public async Task OrderStatusChanged_InvalidStatusForUpdateProvidedForPackedOrder_OrderStateIsNotChanged(
             OrderStatus providedStatus)
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, providedStatus);
-            await DeliverOrderFromInitialToPackedState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, providedStatus);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToPackedState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Packed, statusChangedMessage.UpdatedDate);
+            AssertOrderProperties(orderMessage, OrderStatus.Packed, statusMessage.UpdatedDate);
         }
 
         [TestCase(OrderStatus.AwaitingPacking)]
@@ -87,56 +87,60 @@ namespace OrderSaga.Host.Tests.StateMachines
         public async Task OrderStatusChanged_InvalidStatusForUpdateProvidedForShippedOrder_OrderStateIsNotChanged(
             OrderStatus providedStatus)
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, providedStatus);
-            await DeliverOrderFromInitialToShippedState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, providedStatus);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToShippedState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Shipped, statusChangedMessage.UpdatedDate);
+            AssertOrderProperties(orderMessage, OrderStatus.Shipped, statusMessage.UpdatedDate);
         }
 
         [Test]
         public async Task OrderStatusChanged_FromAwaitingPackingToCancelled_OrderStatusChanged()
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Cancelled);
-            await DeliverOrderFromInitialToAwaitingPackingState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Cancelled);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToAwaitingPackingState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Cancelled);
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Cancelled);
+            await WaitForState(orderMessage.OrderId, StateMachine.Cancelled);
+            AssertOrderProperties(orderMessage, OrderStatus.Cancelled);
         }
 
         [Test]
         public async Task OrderStatusChanged_FromPackedToCancelled_OrderStatusChanged()
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Cancelled);
-            await DeliverOrderFromInitialToPackedState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Cancelled);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToPackedState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Cancelled);
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Cancelled);
+            await WaitForState(orderMessage.OrderId, StateMachine.Cancelled);
+            AssertOrderProperties(orderMessage, OrderStatus.Cancelled);
         }
 
         [Test]
         public async Task OrderStatusChanged_FromShippedToCancelled_OrderStatusChanged()
         {
-            var orderCreatedMessage = TestData.Create.OrderCreated();
-            var statusChangedMessage = TestData.Create.OrderStatusChanged(orderCreatedMessage.OrderNumber, OrderStatus.Cancelled);
-            await DeliverOrderFromInitialToShippedState(orderCreatedMessage);
+            var orderMessage = TestData.Create.OrderCreated();
+            var statusMessage = TestData.Create.OrderStatusChanged(orderMessage.OrderNumber, OrderStatus.Cancelled);
 
-            await SendEndpoint.Send(statusChangedMessage);
+            await DeliverOrderFromInitialToShippedState(orderMessage);
+
+            await SendEndpoint.Send(statusMessage);
 
             await AssertSagaConsumedMessage<OrderStatusChanged>();
-            await WaitForState(orderCreatedMessage.OrderId, StateMachine.Cancelled);
-            AssertOrderProperties(orderCreatedMessage, OrderStatus.Cancelled);
+            await WaitForState(orderMessage.OrderId, StateMachine.Cancelled);
+            AssertOrderProperties(orderMessage, OrderStatus.Cancelled);
         }
     }
 }

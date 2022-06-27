@@ -16,6 +16,29 @@ namespace OrderSaga.Host.Observers
             _logger = logger;
         }
 
+        public Task PostConsume<T>(
+            ConsumeContext<T> context,
+            TimeSpan duration,
+            string consumerType) where T : class
+        {
+            if (context.TryGetMessage<OrderStatusChangedRejected>(out var statusChangedRejectedContext))
+            {
+                _logger.LogInformation(GetRejectedMessageToLog(statusChangedRejectedContext));
+            }
+
+            if (context.TryGetMessage<OrderStatusChangedSubmitted>(out var statusChangedSubmittedContext))
+            {
+                _logger.LogInformation(GetSubmittedMessageToLog(statusChangedSubmittedContext));
+            }
+
+            if (context.TryGetMessage<OrderCreated>(out var orderCreatedContext))
+            {
+                _logger.LogInformation(GetOrderCreatedMessageToLog(orderCreatedContext));
+            }
+
+            return Task.CompletedTask;
+        }
+
         public Task ConsumeFault<T>(
             ConsumeContext<T> context,
             TimeSpan duration,
@@ -31,35 +54,6 @@ namespace OrderSaga.Host.Observers
             Exception exception)
         {
             _logger.LogError(exception, exception.Message);
-            return Task.CompletedTask;
-        }
-
-        public Task PostConsume<T>(
-            ConsumeContext<T> context,
-            TimeSpan duration,
-            string consumerType) where T : class
-        {
-            if (context.TryGetMessage<OrderStatusChangedRejected>(out var statusChangedRejectedContext))
-            {
-                _logger
-                    .LogInformation(
-                        GetRejectedMessageToLog(statusChangedRejectedContext));
-            }
-
-            if (context.TryGetMessage<OrderStatusChangedSubmitted>(out var statusChangedSubmittedContext))
-            {
-                _logger
-                    .LogInformation(
-                        GetSubmittedMessageToLog(statusChangedSubmittedContext));
-            }
-
-            if (context.TryGetMessage<OrderCreated>(out var orderCreatedContext))
-            {
-                _logger
-                    .LogInformation(
-                        GetOrderCreatedMessageToLog(orderCreatedContext));
-            }
-
             return Task.CompletedTask;
         }
 
@@ -84,9 +78,7 @@ namespace OrderSaga.Host.Observers
         private static string GetSubmittedMessageToLog(ConsumeContext<OrderStatusChangedSubmitted> context)
         {
             var message = context.Message;
-            return $"The order: {message.OrderNumber} " +
-                $"transitioned from '{message.PreviousOrderStatus}' " +
-                $"state into '{message.CurrentOrderStatus}' state.";
+            return $"The order: {message.OrderNumber} has been transitioned to '{message.CurrentOrderStatus}' state.";
         }
 
         private static string GetOrderCreatedMessageToLog(ConsumeContext<OrderCreated> context)

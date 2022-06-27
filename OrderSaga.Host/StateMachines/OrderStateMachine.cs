@@ -74,7 +74,7 @@ namespace OrderSaga.Host.StateMachines
                     context => AwaitingPackingState.AwaitingPackingStateAccepted.Contains(context.Message.Status))
                     .Then(ConfigureBehaviourForStatusChangedEventInAwaitingPackingState())
                     .TransitionTo(Packed)
-                    .Publish(CreateStatusSubmittedMessage(OrderStatus.AwaitingPacking)));
+                    .Publish(CreateStatusSubmittedMessage()));
 
             During(AwaitingPacking,
                 When(
@@ -91,7 +91,7 @@ namespace OrderSaga.Host.StateMachines
                     context => PackedState.PackedStateAccepted.Contains(context.Message.Status))
                     .Then(ConfigureBehaviourForStatusChangedEventInPackedState())
                     .TransitionTo(Shipped)
-                    .Publish(CreateStatusSubmittedMessage(OrderStatus.Packed)));
+                    .Publish(CreateStatusSubmittedMessage()));
 
             During(Packed,
                 When(
@@ -117,7 +117,8 @@ namespace OrderSaga.Host.StateMachines
                 When(
                     OrderStatusChanged,
                     context => CancelledState.CancelledStateAccepted.Contains(context.Message.Status))
-                    .TransitionTo(Cancelled));
+                    .TransitionTo(Cancelled)
+                    .Publish(CreateStatusSubmittedMessage()));
 
             During(Cancelled,
                 Ignore(OrderStatusChanged),
@@ -157,11 +158,10 @@ namespace OrderSaga.Host.StateMachines
 
 
         private static EventMessageFactory<Order, OrderStatusChanged, OrderStatusChangedSubmitted>
-            CreateStatusSubmittedMessage(OrderStatus previousOrderStatus) =>
+            CreateStatusSubmittedMessage() =>
                 context =>
                     new OrderStatusChangedSubmitted(
                         orderNumber: context.Saga.OrderNumber,
-                        previousOrderStatus: previousOrderStatus,
                         currentOrderStatus: context.Message.Status);
 
         private static EventMessageFactory<Order, OrderStatusChanged, OrderStatusChangedRejected>
