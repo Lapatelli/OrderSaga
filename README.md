@@ -6,7 +6,7 @@ OrderSaga messaging solution with _RabbitMQ_, _MassTransit_, _NHibernate and \_S
 
 1. Install _RabbitMQ_ locally.
 2. Create `appsettings.json` files in _OrderSaga.DatabaseSchema_, _OrderSaga.Host_ and _OrderSaga.WebAPI_ projects based on samples which are located in the respective projects.
-3. Apply necessary connection string to DB and configure RabbitMq connection with user credentials.
+3. Apply necessary connection string to DB and configure RabbitMq connection with user credentials. Build all above mentioned projects for applying `appsettings.json` files.
 
 _OrderSaga.DatabaseSchema_:
 
