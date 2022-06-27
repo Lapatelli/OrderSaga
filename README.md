@@ -42,6 +42,6 @@ In _OrderSaga.Host_ console the following information about OrderSagaStateMachin
 - info about status changing (is the status changed for order or not and the reason).
 
 6. The following steps will provide the opportunity to check process flow of this App:
-   - Send `POST` request from `OrderController` with filling all necessary data (_CustomerName_, _CustomerSurname_, _OrderItems_). Generated `orderId` and `orderNumber` will be in response to this request. Please, apply the order number for checking the order info (`GET` request) and update the status of the order(`PUT` request) during next steps.
+   - Send `POST` request from `OrderController` with filling all the necessary data (_CustomerName_, _CustomerSurname_, _OrderItems_). Generated `orderId` and `orderNumber` will be in response to this request. Please, apply the order number for checking the order info (`GET` request) and for updating the status of the order (`PUT` request) during next steps.
    - Send `GET` request from `OrderController` for receiving data about recently created order with correlated items.
    - Sned `PUT` request from `OrderControllewr` for updating order status. _Note: In case of successful status changing or impossibility of status changing, corresponding log could be found in debug console._
